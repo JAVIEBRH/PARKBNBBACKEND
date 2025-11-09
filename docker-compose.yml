@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: parkbnb-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: parkbnb
+    volumes:
+      - mongo-data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - parkbnb-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: parkbnb-api
+    restart: unless-stopped
+    ports:
+      - '5001:5001'
+    environment:
+      - NODE_ENV=development
+      - PORT=5001
+      - MONGO_URI=mongodb://mongo:27017/parkbnb
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./public/uploads:/app/public/uploads
+    depends_on:
+      - mongo
+    networks:
+      - parkbnb-network
+    command: npm run dev
+
+volumes:
+  mongo-data:
+
+networks:
+  parkbnb-network:
+    driver: bridge
+
