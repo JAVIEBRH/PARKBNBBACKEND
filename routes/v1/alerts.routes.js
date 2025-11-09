@@ -9,7 +9,7 @@ import {
   reopenAlert,
   resolveAlert,
 } from '../../controllers/alerts/alerts.controller.js';
-import { requireAuth } from '../../middleware/auth.js';
+import { requireAuth } from '../../middlewares/auth.js';
 
 const router = Router();
 
